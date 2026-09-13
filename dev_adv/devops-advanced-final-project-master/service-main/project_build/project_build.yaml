@@ -1,0 +1,51 @@
+---
+- name: Развёртывание сервиса через "Docker Compose"
+  hosts: localhost
+  become: true
+
+  vars:
+    docker_image: "skillbox/app"
+    service_name: "project"
+    service_version: "3.1"
+    container_port: "8080:8080"
+    ssh_key_git: "/home/nav/ansible/key_for_git"
+
+
+  tasks:
+
+
+# Создание директории для unit-файлов
+    - name: Создание директории для переопределения службы {{ service_name }}
+      file:
+        path: /etc/systemd/system/{{ service_name }}.service.d
+        state: directory
+        mode: "0755"
+
+
+ # Размещение unit-файла
+    - name: Размещение unit-файла сервиса
+      template:
+        src: ./template/unit.j2
+        dest: /etc/systemd/system/{{ service_name }}.service.d/override.conf
+        mode: "0644"
+
+# Копирование Unit файла в lib
+
+    - name: Копирование Unit файла
+      template:
+        src: ./template/unit.j2
+        dest: "/lib/systemd/system/{{ service_name }}.service"
+        mode: "0644"
+
+
+# Перезагрузка systemd
+    - name: Перезагрузка systemd
+      systemd:
+        daemon_reload: yes
+
+
+# Запуск сервиса
+    - name: Запуск и включение сервиса
+      service:
+        name: "{{ service_name }}"
+        state: started

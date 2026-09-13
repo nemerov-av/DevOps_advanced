@@ -1,0 +1,33 @@
+services:
+  # Сервис для разработки и тестов
+  dev-tools:
+    build:
+      context: .
+      target: builder # Используем этап сборщика, где есть go
+    volumes:
+      - .:/app # Монтируем текущую папку, чтобы видеть изменения кода
+    working_dir: /app
+    command: tail -f /dev/null # Держим контейнер запущенным
+
+# Алиас для тестов
+  tests:
+    extends: dev-tools
+    command: go test -v ./...
+
+  # Алиас для форматирования
+  fmt:
+    extends: dev-tools
+    command: go fmt ./...
+
+
+
+  # Основной сервис (для запуска приложения)
+  app:
+    build:
+      context: .
+      target: runner
+    ports:
+      - "8080:8080"
+
+# запуск теста docker-compose run --rm dev-tools go test -v ./...
+# запуск форматирования docker-compose run --rm dev-tools go fmt ./...

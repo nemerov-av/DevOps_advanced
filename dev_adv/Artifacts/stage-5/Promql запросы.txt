@@ -1,0 +1,4 @@
+sum(rate(haproxy_frontend_http_responses_total[5m])) by (code)
+haproxy_backend_response_time_average_seconds{proxy="main_app_backend"} * 1000
+
+sum(rate(haproxy_frontend_http_responses_total{code="5xx"}[5m])) / sum(rate(haproxy_frontend_http_responses_total[5m])) * 100

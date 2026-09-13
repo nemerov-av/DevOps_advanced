@@ -1,0 +1,14 @@
+[Unit]
+          Description=Docker container for project
+          After=docker.service
+          Requires=docker.service
+
+          [Service]
+          Restart=always
+          ExecStart=
+          ExecStart=/usr/bin/docker run --rm --name {{ service_name }} -p {{ container_port }} {{ docker_image }}:{{ service_version }}
+          ExecStop=/usr/bin/docker stop {{ service_name }}
+          ExecStopPost=/usr/bin/docker rm -f {{ service_name }}
+
+          [Install]
+          WantedBy=multi-user.target

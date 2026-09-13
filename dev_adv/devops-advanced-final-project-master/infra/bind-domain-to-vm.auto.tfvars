@@ -1,0 +1,5 @@
+yc_folder_id    = "b1gh7i2f72jvg4hs6v67"
+ssh_key_path = "1.pub"
+domain_name  = "prod.krs124.online"
+service_account_id = "aje6den0fm5kmf1l9pvj"
+yc_cloud_id = "b1g627u7o2v9bg0o9etg"

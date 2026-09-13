@@ -1,0 +1,43 @@
+---
+- name: Install GitLab Runner
+  hosts: localhost
+  become: yes
+
+  vars:
+    gitlab_runner_token: "glrt-bzoxCnA6MTUwZ3A2CnQ6Mwp1OjZkMW9mlNXZErGOIilKrTRzJKm_0xA.1j1uliq3l"
+    gitlab_url: "https://gitlab.com"
+    runner_description: "My Runner"
+    runner_executor: "shell" # например, 'docker', 'shell', и т.д.
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - ca-certificates
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Add GitLab Runner repository
+      shell: "curl -L https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.deb.sh | sudo bash"
+
+    - name: Install GitLab Runner
+      apt:
+        name: gitlab-runner
+        state: present
+
+    - name: Enable and start GitLab Runner service
+      systemd:
+        name: gitlab-runner
+        enabled: yes
+        state: started
+
+    - name: Зарегистрировать GitLab Runner
+      shell: "gitlab-runner register --non-interactive --url {{ gitlab_url }} --token {{ gitlab_runner_token }} --executor {{ runner_executor }}"
+      register: register_output
+
+    - name: Вывести вывод регистрации
+      debug:
+        var: register_output.stdout_lines
